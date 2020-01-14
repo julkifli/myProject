@@ -10,7 +10,7 @@ class TaskController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     @return \Illuminate\Http\Response
      */
     public function index()
     {
@@ -38,7 +38,14 @@ class TaskController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        //Validate
+        $request->validate([
+            'title' => 'required|min:3',
+            'description' => 'required',
+        ]);
+
+        $task = Task::create(['title' => $request->title,'description' => $request->description]);
+        return redirect('/tasks/'.$task->id);
     }
 
     /**
@@ -50,6 +57,8 @@ class TaskController extends Controller
     public function show(Task $task)
     {
         //
+        return view('tasks.show',compact('task',$task));
+
     }
 
     /**
@@ -61,6 +70,7 @@ class TaskController extends Controller
     public function edit(Task $task)
     {
         //
+        return view('tasks.edit',compact('task',$task));
     }
 
     /**
@@ -73,6 +83,16 @@ class TaskController extends Controller
     public function update(Request $request, Task $task)
     {
         //
+        $request->validate([
+            'title' => 'required|min:3',
+            'description' => 'required',
+        ]);
+
+        $task->title = $request->title;
+        $task->description = $request->description;
+        $task->save();
+        $request->session()->flash('message', 'Successfully modified the task!');
+        return redirect('tasks');
     }
 
     /**
